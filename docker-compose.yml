@@ -6,6 +6,8 @@ services:
     image: influxdb:1.8.10
     hostname: influxdb
     container_name: influxdb
+    ports:
+      - "8086:8086"
     restart: always
     volumes:
       - sense-data:/var/lib/influxdb
