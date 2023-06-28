@@ -8,6 +8,8 @@ import RPi.GPIO as GPIO
 from collections import deque
 from influxdb import InfluxDBClient
 
+print('Starting Counter...\n');
+
 counts = deque()
 hundredcount = 0
 usvh_ratio = 0.00812037037037 # This is for the J305 tube
@@ -68,13 +70,13 @@ loop_count = 0
 # that are older than 60 seconds
 while True:
     loop_count = loop_count + 1
-        
+
     try:
         while counts[0] < datetime.datetime.now() - datetime.timedelta(seconds=60):
             counts.popleft()
     except IndexError:
         pass # there are no records in the queue.
-    
+
     if loop_count == 10:
         # Every 10th iteration (10 seconds), store a measurement in Influx
         measurements = [
@@ -86,14 +88,15 @@ while True:
                 }
             }
         ]
-        
+
         influx_client.write_points(measurements)
+        print(measurements,"\n");
         loop_count = 0
-    
+
     # Update the displays with a zero-padded string
     text_count = f"{len(counts):0>3}"
     my_tube.set_digit(int(text_count[0]))
     my_tube_m.set_digit(int(text_count[1]))
     my_tube_r.set_digit(int(text_count[2]))
-    
+
     time.sleep(1)

@@ -4,14 +4,19 @@ volumes:
 services:
   influxdb:
     image: influxdb:1.8.10
+    hostname: influxdb
+    container_name: influxdb
     restart: always
     volumes:
       - sense-data:/var/lib/influxdb
+
   grafana:
     restart: always
     build: ./grafana
+    hostname: grafana
+    container_name: grafana
     ports:
-      - "80"
+      - "80:80"
     volumes:
       - 'sense-data:/data'
     environment:
@@ -20,7 +25,10 @@ services:
         - 'GF_SESSION_PROVIDER=memory'
     depends_on:
       - influxdb
+
   counter:
+    hostname: counter
+    container_name: counter
     restart: always
     build: ./counter
     privileged: true
