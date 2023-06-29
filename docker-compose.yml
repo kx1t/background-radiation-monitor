@@ -1,18 +1,24 @@
 version: '2'
+
 volumes:
     sense-data:
+
 services:
   influxdb:
+    profiles:
+      - local_everything
     image: influxdb:1.8.10
     hostname: influxdb
     container_name: influxdb
     ports:
       - "8086:8086"
-    restart: always
+    restart: unless-stopped
     volumes:
       - sense-data:/var/lib/influxdb
 
   grafana:
+    profiles:
+      - donotstart
     restart: always
     build: ./grafana
     hostname: grafana
@@ -31,7 +37,7 @@ services:
   counter:
     hostname: counter
     container_name: counter
-    restart: always
+    restart: unless-stopped
     build: ./counter
     privileged: true
     ports:
