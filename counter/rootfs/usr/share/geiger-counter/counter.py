@@ -26,7 +26,7 @@ import RPi.GPIO as GPIO
 from collections import deque
 from influxdb import InfluxDBClient
 
-print('Starting Counter...\n');
+print('Starting Counter...\n', flush=True);
 
 
 
@@ -114,16 +114,16 @@ while True:
             print(measurements,"\n");
             loop_count = 0
         elif os.environ.get('DB_OUTPUT') == "prometheus":
-            with open("/run/prometheus.txt", 'w') as f:
+            with open("/run/prometheus.prom", 'w') as f:
                 print("geiger_cpm " + int(len(counts)) + '\n', file=f)
                 print("geiger_usvh " + "{:.2f}".format(len(counts)*usvh_ratio) + '\n', file=f)
                 f.close()
         else:
-            print("ERROR: $DB_OUTPUT is not \'influx\ or \'prometheus\'\n")
+            print("ERROR: $DB_OUTPUT is not \'influx\ or \'prometheus\'\n", flush=True)
 
         if os.environ.get('GEIGER_VERBOSE') == "true":
-            print("count=" + int(len(counts)) + ' cpm\n')
-            print("exposure="+ "{:.2f}".format(len(counts)*usvh_ratio) + ' uSv/h\n')
+            print("count=" + int(len(counts)) + ' cpm\n', flush=True)
+            print("exposure="+ "{:.2f}".format(len(counts)*usvh_ratio) + ' uSv/h\n', flush=True)
 
     # Update the displays with a zero-padded string
     text_count = f"{len(counts):0>3}"

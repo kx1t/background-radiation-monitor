@@ -7,6 +7,7 @@ RUN set -x && \
     KEPT_PACKAGES=() && \
     TEMP_PACKAGES+=(gcc) && \
     TEMP_PACKAGES+=(build-essential) && \
+    TEMP_PACKAGES+=(git) && \
     KEPT_PACKAGES+=(bash-builtins) && \
     KEPT_PACKAGES+=(python3-dev) && \
     KEPT_PACKAGES+=(nano) && \
@@ -34,4 +35,4 @@ RUN set -x && \
 
 COPY rootfs/ /
 
-CMD ["python","counter.py"]
+#CMD ["python","counter.py"]
