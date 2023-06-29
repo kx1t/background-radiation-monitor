@@ -34,6 +34,8 @@ services:
     restart: always
     build: ./counter
     privileged: true
+    ports:
+      - "9274:9274"
     environment:
       - VERBOSE=true
       - DB_OUTPUT=prometheus
