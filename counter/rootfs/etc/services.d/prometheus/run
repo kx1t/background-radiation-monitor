@@ -3,7 +3,7 @@
 
 source /scripts/common
 
-if chk_enabled "$PROMETHEUS_ENABLE"; then
+if [[ "${DB_OUTPUT,,}" == "prometheus" ]]; then
     while [[ ! -f /run/prometheus.prom ]]
     do
         sleep 1
