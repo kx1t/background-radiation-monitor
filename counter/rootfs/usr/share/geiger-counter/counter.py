@@ -1,14 +1,34 @@
+#!/usr/bin/python3
 # THE GEIGER COUNTER (at last)
+"""
+   Copyright 2020-2023 Chris Crocker-White https://github.com/chrisys
+   Modifications Copyright 2023 Ramon F Kolb https://github.com/kx1t
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
 
 import exixe
 import spidev
 import time
 import datetime
+import os
 import RPi.GPIO as GPIO
 from collections import deque
 from influxdb import InfluxDBClient
 
 print('Starting Counter...\n');
+
+
 
 counts = deque()
 hundredcount = 0
@@ -78,20 +98,32 @@ while True:
         pass # there are no records in the queue.
 
     if loop_count == 10:
-        # Every 10th iteration (10 seconds), store a measurement in Influx
-        measurements = [
-            {
-                'measurement': 'balena-sense',
-                'fields': {
-                    'cpm': int(len(counts)),
-                    'usvh': "{:.2f}".format(len(counts)*usvh_ratio)
+        # Every 10th iteration (10 seconds), store a measurement in Influx or make it available to Prometheus
+        if os.environ.get('DB_OUTPUT') == "influx":
+            measurements = [
+                {
+                    'measurement': 'balena-sense',
+                    'fields': {
+                        'cpm': int(len(counts)),
+                        'usvh': "{:.2f}".format(len(counts)*usvh_ratio)
+                    }
                 }
-            }
-        ]
+            ]
 
-        influx_client.write_points(measurements)
-        print(measurements,"\n");
-        loop_count = 0
+            influx_client.write_points(measurements)
+            print(measurements,"\n");
+            loop_count = 0
+        elif os.environ.get('DB_OUTPUT') == "prometheus":
+            with open("/run/prometheus.txt", 'w') as f:
+                print("geiger_cpm " + int(len(counts)) + '\n', file=f)
+                print("geiger_usvh " + "{:.2f}".format(len(counts)*usvh_ratio) + '\n', file=f)
+                f.close()
+        else:
+            print("ERROR: $DB_OUTPUT is not \'influx\ or \'prometheus\'\n")
+
+        if os.environ.get('GEIGER_VERBOSE') == "true":
+            print("count=" + int(len(counts)) + ' cpm\n')
+            print("exposure="+ "{:.2f}".format(len(counts)*usvh_ratio) + ' uSv/h\n')
 
     # Update the displays with a zero-padded string
     text_count = f"{len(counts):0>3}"

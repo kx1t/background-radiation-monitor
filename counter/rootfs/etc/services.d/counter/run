@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash disable=SC1091
+
+source /scripts/common
+cd /usr/share/geiger-counter || exit 1
+
+if chk_enabled "${VERBOSE}"; then
+    export GEIGER_VERBOSE="true"
+fi 
+
+exec s6wrap --quiet --prepend=counter --timestamps --args python counter.py
