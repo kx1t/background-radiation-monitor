@@ -2,6 +2,7 @@ import spidev
 import time
 import RPi.GPIO as GPIO
 
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 
 EXIXE_SPI_BUF_SIZE = 16
