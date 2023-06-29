@@ -1,7 +1,5 @@
 FROM ghcr.io/sdr-enthusiasts/docker-baseimage:python
 
-WORKDIR /usr/app/src
-
 RUN set -x && \
     TEMP_PACKAGES=() && \
     KEPT_PACKAGES=() && \
