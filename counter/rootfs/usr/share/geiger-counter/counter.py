@@ -78,8 +78,9 @@ my_tube_m.set_led(127, 28, 0)
 my_tube_r.set_led(127, 28, 0)
 
 # Setup influx client (this is using a modified version of balenaSense)
-influx_client = InfluxDBClient('influxdb', 8086, database='balena-sense')
-influx_client.create_database('balena-sense')
+if os.environ.get('DB_OUTPUT') == "influx":
+    influx_client = InfluxDBClient('influxdb', 8086, database='balena-sense')
+    influx_client.create_database('balena-sense')
 
 loop_count = 0
 
