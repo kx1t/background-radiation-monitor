@@ -8,5 +8,4 @@ if chk_enabled "${VERBOSE}"; then
     export GEIGER_VERBOSE="true"
 fi 
 
-s6wrap --quiet --prepend=counter --timestamps --args echo "Starting counter.py..."
-exec s6wrap --quiet --prepend=counter --timestamps --args python -u counter.py
+s6wrap --prepend=counter --timestamps --args python3 -u counter.py
