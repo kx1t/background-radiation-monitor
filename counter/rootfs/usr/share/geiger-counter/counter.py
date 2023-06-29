@@ -26,9 +26,7 @@ import RPi.GPIO as GPIO
 from collections import deque
 from influxdb import InfluxDBClient
 
-print('Starting Counter...\n', flush=True);
-
-
+print(f'Starting Counter..., output to {os.environ.get("DB_OUTPUT")}', flush=True);
 
 counts = deque()
 hundredcount = 0
@@ -109,22 +107,21 @@ while True:
                     }
                 }
             ]
-
             influx_client.write_points(measurements)
             print(measurements,"\n");
-            loop_count = 0
         elif os.environ.get('DB_OUTPUT') == "prometheus":
             with open("/run/prometheus.prom", 'w') as f:
-                print("geiger_cpm " + int(len(counts)) + '\n', file=f)
-                print("geiger_usvh " + "{:.2f}".format(len(counts)*usvh_ratio) + '\n', file=f)
+                print(f'geiger_cpm {int(len(counts))}', file=f)
+                print(f'geiger_usvh {"{:.2f}".format(len(counts)*usvh_ratio)}', file=f)
                 f.close()
         else:
-            print("ERROR: $DB_OUTPUT is not \'influx\ or \'prometheus\'\n", flush=True)
-
+            print("ERROR: $DB_OUTPUT is not \'influx\ or \'prometheus\'", flush=True)
         if os.environ.get('GEIGER_VERBOSE') == "true":
-            print("count=" + int(len(counts)) + ' cpm\n', flush=True)
-            print("exposure="+ "{:.2f}".format(len(counts)*usvh_ratio) + ' uSv/h\n', flush=True)
+            print(f'count={int(len(counts))} cpm', flush=True)
+            print(f'exposure={"{:.2f}".format(len(counts)*usvh_ratio)} uSv/h', flush=True)
 
+        loop_count = 0
+        
     # Update the displays with a zero-padded string
     text_count = f"{len(counts):0>3}"
     my_tube.set_digit(int(text_count[0]))
