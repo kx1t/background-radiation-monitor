@@ -26,7 +26,7 @@ import RPi.GPIO as GPIO
 from collections import deque
 from influxdb import InfluxDBClient
 
-print(f'Starting Counter..., output to {os.environ.get("DB_OUTPUT")}', flush=True);
+print(f'Starting Counter, output to {os.environ.get("DB_OUTPUT")}...', flush=True);
 
 counts = deque()
 hundredcount = 0
@@ -121,7 +121,7 @@ while True:
             print(f'exposure={"{:.2f}".format(len(counts)*usvh_ratio)} uSv/h', flush=True)
 
         loop_count = 0
-        
+
     # Update the displays with a zero-padded string
     text_count = f"{len(counts):0>3}"
     my_tube.set_digit(int(text_count[0]))
