@@ -20,6 +20,6 @@ cd /usr/share/geiger-counter || exit 1
 
 if chk_enabled "${VERBOSE}"; then
     export GEIGER_VERBOSE="true"
-fi 
+fi
 
 s6wrap --prepend=counter --timestamps --args python3 -u counter.py
