@@ -45,6 +45,7 @@ services:
     environment:
       - VERBOSE=true
       - DB_OUTPUT=prometheus
+      - GEIGER_PIN=33
     tmpfs:
       - /run:rw,nosuid,nodev,exec,relatime,size=256M
       - /tmp:rw,nosuid,nodev,noexec,relatime,size=128M

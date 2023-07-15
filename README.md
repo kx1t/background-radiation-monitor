@@ -31,6 +31,26 @@ We recommend this button as the de-facto method for deploying new apps on balena
 
 ## Access the dashboard
 
-Once the software has been deployed and downloaded to your device, the dashboard will be accessible on the local IP address of the device, or via the balenaCloud public URL feature.
+Once the software has been deployed and downloaded to your device, the dashboard will be accessible via a web browser on the local IP address of the device, or via the balenaCloud public URL feature.
 
-![public-url](https://raw.githubusercontent.com/balenalabs-incubator/background-radiation-monitor/master/assets/public-url.png)
+## Quick Reference
+
+How-to.... 
+
+* buy one of these: https://www.aliexpress.us/item/3256803888132442.html
+hook 'm up like this: https://raw.githubusercontent.com/balenalabs-incubator/background-radiation-monitor/master/assets/pi-geiger-simple.png
+* Clone this repo: https://github.com/kx1t/background-radiation-monitor
+* add this to your /boot/config.txt and reboot your Raspberry Pi:
+
+```text
+dtoverlay=vc4-kms-v3d
+dtparam=i2c_arm=on
+dtparam=spi=on
+dtparam=audio=on
+enable_uart=0
+gpu_mem=16
+```
+
+* do a docker compose up -d in the directory with docker-compose.yml
+* Browse to your Raspberry Pi and it should be running!
+Total cost (in addition to a Raspberry Pi) -- about $20

@@ -26,7 +26,13 @@ import RPi.GPIO as GPIO
 from collections import deque
 from influxdb import InfluxDBClient
 
-print(f'Starting Counter, output to {os.environ.get("DB_OUTPUT")}...', flush=True);
+try:
+    geiger_pin=int(os.environ.get("GEIGER_PIN"))
+except: 
+    geiger_pin=7
+
+print(f'Starting Counter, output to {os.environ.get("DB_OUTPUT")}...', flush=True)
+
 
 counts = deque()
 hundredcount = 0
@@ -57,8 +63,8 @@ def count100():
 
 
 # Set the input with falling edge detection for geiger counter pulses
-GPIO.setup(7, GPIO.IN)
-GPIO.add_event_detect(7, GPIO.FALLING, callback=countme)
+GPIO.setup(geiger_pin, GPIO.IN)
+GPIO.add_event_detect(geiger_pin, GPIO.FALLING, callback=countme)
 
 # Initialize everything needed for the Exixe Nixie tube drivers
 spi = spidev.SpiDev()
