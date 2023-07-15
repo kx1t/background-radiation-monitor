@@ -31,8 +31,7 @@ try:
 except: 
     geiger_pin=7
 
-print(f'Starting Counter, output to {os.environ.get("DB_OUTPUT")}...', flush=True)
-
+print(f'Starting Counter, input from pin {geiger_pin}; output to {os.environ.get("DB_OUTPUT")}...', flush=True)
 
 counts = deque()
 hundredcount = 0
