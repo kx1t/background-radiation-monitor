@@ -6,16 +6,16 @@
 
 ## Hardware required
 
-* A Raspberry Pi (any model should be good for this, but I’d recommend a 3 or above just for performance reasons)
-* An 8GB (or larger) SD card (we recommend SanDisk Extreme Pro SD cards)
+* A Raspberry Pi 3B+ or later (4 or 5 will definitely work, but are a bit of overkill)
+* An 32 GB (or larger) SD card (we recommend SanDisk Extreme Pro SD cards)
 * A power supply (PSU)
 * A radiation detector [Amazon UK](https://www.amazon.co.uk/KKmoon-Assembled-Counter-Radiation-Detector/dp/B07S86Q5X8) or [AliExpress](https://www.aliexpress.com/item/32884861168.html?spm=a2g0o.productlist.0.0.5faf6aa9OuQXsc)
-* Some [Dupont cables/jumper jerky](https://shop.pimoroni.com/products/jumper-jerky?variant=348491271) (you’ll need 3 female-female cables)
+* Some [Dupont cables/jumper jerky](https://shop.pimoroni.com/products/jumper-jerky?variant=348491271) (you’ll need 3 female-female cables - NOTE - check, they often come included with your radiation detector kit!)
 
 
 ## Hardware connection
 
-There are 3 connections we need to make from the radiation detector board to the Raspberry Pi. They are +5V and Ground (GND) for power, and the output pulse line to detect the count. Note that this is called `VIN` which can be a bit confusing as this usually means ‘voltage input’ or something similar, but on this board, it’s the output.
+There are 3 connections we need to make from the radiation detector board to the Raspberry Pi. They are +5V and Ground (GND) for power, and the output pulse line to detect the count. Note that this is called `Vin` which can be a bit confusing as this usually means ‘voltage input’ or something similar, but on this board, it’s the output.
 
 ![pi-geiger-simple](https://raw.githubusercontent.com/balenalabs-incubator/background-radiation-monitor/master/assets/pi-geiger-simple.png)
 
@@ -23,15 +23,44 @@ In this configuration you only need to provide 5 volt power to one of the two bo
 
 ## Software setup
 
-Running this project is as simple as deploying it to a balenaCloud application, then downloading the OS image from the dashboard and flashing your SD card.
+1. Get a Raspberry Pi and load a SD card image with Raspberry Pi OS or DietPi
+2. Add this to end of `/boot/config.txt` to enable the GPIO headers:
 
-[![](https://balena.io/deploy.png)](https://dashboard.balena-cloud.com/deploy)
+```text
+dtoverlay=vc4-kms-v3d
+dtparam=i2c_arm=on
+dtparam=spi=on
+dtparam=audio=on
+enable_uart=0
+gpu_mem=16
+```
 
-We recommend this button as the de-facto method for deploying new apps on balenaCloud, but as an alternative, you can set this project up with the repo and balenaCLI if you choose. Get the code from this repo, and set up [balenaCLI](https://github.com/balena-io/balena-cli) on your computer to push the code to balenaCloud and your devices. [Read more](https://www.balena.io/docs/learn/deploy/deployment/).
+3. Install Docker using the script from [this](https://github.com/sdr-enthusiasts/docker-install) page
+4. Reboot your system and log in again
+5. Enter the following commands:
 
-## Access the dashboard
+```bash
+sudo mkdir -p -m 777 /opt/geiger
+cd /opt/geiger
+git clone https://github.com/kx1t/background-radiation-monitor.git /opt/geiger
+docker compose up -d    # first time bringing the container up may take a while! 
+```
 
-Once the software has been deployed and downloaded to your device, the dashboard will be accessible via a web browser on the local IP address of the device, or via the balenaCloud public URL feature.
+Now you have a dashboard that can talk to an existing instance of Prometheus. Check that it works with:
+
+```bash
+docker logs -f counter
+```
+
+You can add the following to your `prometheus.yml` config file to ingest data (replace `1.2.3.4` with the IP of the machine on which your Geiger Counter is running):
+
+```yaml
+  - job_name: 'geiger'
+    static_configs:
+      - targets: ['1.2.3.4:9274']
+```
+
+If you want a sample Grafana dashboard, you can start with this one: [20075](https://grafana.com/grafana/dashboards/20075)
 
 ## Quick Reference
 
