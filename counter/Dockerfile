@@ -35,7 +35,7 @@ RUN set -x && \
     # Add Container Version
 #    branch="##BRANCH##" && \
 #    [[ "${branch:0:1}" == "#" ]] && branch="main" || true && \
-#    git clone --depth=1 -b $branch https://github.com/sdr-enthusiasts/docker-tar1090.git /tmp/clone && \
+#    git clone --depth=1 -b main https://github.com/kx1t/background-radiation-monitor.git /tmp/clone && \
 #    pushd /tmp/clone && \
 #    bash -ec 'echo "$(TZ=UTC date +%Y%m%d-%H%M%S)_$(git rev-parse --short HEAD)_$(git branch --show-current)" > /.CONTAINER_VERSION' && \
 #    popd && \
