@@ -80,6 +80,7 @@ jobs:
       build_version_specific: false
       build_platform_specific: false
       build_nohealthcheck: false
+      platform_linux_amd64_enabled: false
       build_baseimage_url: docker-baseimage:python
     secrets:
       ghcr_token: ${{ secrets.GITHUB_TOKEN }}
