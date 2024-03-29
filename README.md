@@ -7,7 +7,7 @@
 ## Hardware required
 
 * A Raspberry Pi 3B+ or later (4 or 5 will definitely work, but are a bit of overkill)
-* An 32 GB (or larger) SD card (we recommend SanDisk Extreme Pro SD cards)
+* A 32 GB (or larger) SD card (we recommend SanDisk Extreme Pro SD cards)
 * A power supply (PSU)
 * A radiation detector [Amazon UK](https://www.amazon.co.uk/KKmoon-Assembled-Counter-Radiation-Detector/dp/B07S86Q5X8) or [AliExpress](https://www.aliexpress.com/item/32884861168.html?spm=a2g0o.productlist.0.0.5faf6aa9OuQXsc)
 * Some [Dupont cables/jumper jerky](https://shop.pimoroni.com/products/jumper-jerky?variant=348491271) (you’ll need 3 female-female cables - NOTE - check, they often come included with your radiation detector kit!)
@@ -42,7 +42,7 @@ gpu_mem=16
 ```bash
 sudo mkdir -p -m 777 /opt/geiger
 cd /opt/geiger
-git clone https://github.com/kx1t/background-radiation-monitor.git /opt/geiger
+wget 
 docker compose up -d    # first time bringing the container up may take a while! 
 ```
 

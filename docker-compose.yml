@@ -4,44 +4,14 @@ volumes:
     sense-data:
 
 services:
-  influxdb:
-    profiles:
-      - local_everything
-    image: influxdb:1.8.10
-    hostname: influxdb
-    container_name: influxdb
-    ports:
-      - "8086:8086"
-    restart: unless-stopped
-    volumes:
-      - sense-data:/var/lib/influxdb
-
-  grafana:
-    profiles:
-      - local_everything
+  geiger:
+    hostname: geiger
+    container_name: geiger
     restart: always
-    build: ./grafana
-    hostname: grafana
-    container_name: grafana
-    ports:
-      - "80:80"
-    volumes:
-      - 'sense-data:/data'
-    environment:
-      - 'GF_SERVER_HTTP_PORT=80'
-      - 'GF_PATHS_PROVISIONING=/usr/src/app/provisioning'
-      - 'GF_SESSION_PROVIDER=memory'
-    depends_on:
-      - influxdb
-
-  counter:
-    hostname: counter
-    container_name: counter
-    restart: unless-stopped
-    build: ./counter
+    image: ghcr.io/kx1t/background-radiation-monitor
     privileged: true
     ports:
-      - "9274:9274"
+      - "9275:9274"
     environment:
       - VERBOSE=true
       - DB_OUTPUT=prometheus
@@ -52,3 +22,50 @@ services:
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/etc/timezone:/etc/timezone:ro"
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    hostname: prometheus
+    restart: always
+    command:
+       - '--config.file=/etc/prometheus/prometheus.yml'
+       - '--storage.tsdb.path=/prometheus'
+       - '--web.console.libraries=/etc/prometheus/console_libraries'
+       - '--web.console.templates=/etc/prometheus/consoles'
+       - '--storage.tsdb.retention.time=1y'
+       - '--storage.tsdb.retention.size=10GB'
+       - '--web.enable-lifecycle'
+    tmpfs:
+      - /tmp
+    volumes:
+      - /opt/grafana/prometheus/config:/etc/prometheus
+      - /opt/grafana/prometheus/data:/prometheus
+    ports:
+      - 9090:9090
+      
+  grafana:
+    image: grafana/grafana-oss:9.5.3-ubuntu
+    restart: always
+    container_name: grafana
+    hostname: grafana
+    tty: true
+    environment:
+      - GF_SERVER_ROOT_URL=https://mysite.com/gfna
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=public
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true
+      - GF_INSTALL_PLUGINS=snuids-radar-panel,fatcloud-windrose-panel
+      - GF_RENDERING_SERVER_URL=http://renderer:8081/render
+      - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
+      - GF_LOG_FILTERS=rendering:debug
+      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+    ports:
+      - 3000:3000
+    volumes:
+      - /opt/grafana/grafana/appdata:/var/lib/grafana
+
+  renderer:
+    image: grafana/grafana-image-renderer:latest
