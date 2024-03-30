@@ -1,6 +1,6 @@
 # Background Radiation Monitor
 
-**A simple balenaCloud application to measure and record background radiation in your area. Radiation is detected with a cheaply available board, and connected to a Raspberry Pi to provide InfluxDB for datalogging and Grafana for pretty charts.**
+**A simple Docker container to measure and record background radiation in your area. Radiation is detected with a cheaply available board, and connected to a Raspberry Pi to provide Prometheus for datalogging and Grafana for pretty charts.**
 
 ![grafana-dashboard](https://raw.githubusercontent.com/balenalabs-incubator/background-radiation-monitor/master/assets/grafana-dashboard.png)
 
@@ -11,7 +11,6 @@
 * A power supply (PSU)
 * A radiation detector [Amazon UK](https://www.amazon.co.uk/KKmoon-Assembled-Counter-Radiation-Detector/dp/B07S86Q5X8) or [AliExpress](https://www.aliexpress.com/item/32884861168.html?spm=a2g0o.productlist.0.0.5faf6aa9OuQXsc)
 * Some [Dupont cables/jumper jerky](https://shop.pimoroni.com/products/jumper-jerky?variant=348491271) (you’ll need 3 female-female cables - NOTE - check, they often come included with your radiation detector kit!)
-
 
 ## Hardware connection
 
@@ -42,8 +41,8 @@ gpu_mem=16
 ```bash
 sudo mkdir -p -m 777 /opt/geiger
 cd /opt/geiger
-wget 
-docker compose up -d    # first time bringing the container up may take a while! 
+wget https://raw.githubusercontent.com/kx1t/background-radiation-monitor/main/docker-compose.yml
+docker compose up -d 
 ```
 
 Now you have a dashboard that can talk to an existing instance of Prometheus. Check that it works with:
@@ -52,34 +51,31 @@ Now you have a dashboard that can talk to an existing instance of Prometheus. Ch
 docker logs -f counter
 ```
 
-You can add the following to your `prometheus.yml` config file to ingest data (replace `1.2.3.4` with the IP of the machine on which your Geiger Counter is running):
+You can put following in your `prometheus.yml` config file to ingest data. If you don't run Prometheus in the same docker-compose stack as your `geiger` container, replace `geiger` with the IP of the machine on which your Geiger Counter is running:
+
+Type `cat | sude tee /opt/geiger/prometheus/config/prometheus.yml >/dev/null` and paste in the following:
 
 ```yaml
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
   - job_name: 'geiger'
     static_configs:
-      - targets: ['1.2.3.4:9274']
+      - targets: ['geiger:9274']
 ```
 
 If you want a sample Grafana dashboard, you can start with this one: [20075](https://grafana.com/grafana/dashboards/20075)
-
-## Quick Reference
-
-How-to.... 
-
-* buy one of these: https://www.aliexpress.us/item/3256803888132442.html
-hook 'm up like this: https://raw.githubusercontent.com/balenalabs-incubator/background-radiation-monitor/master/assets/pi-geiger-simple.png
-* Clone this repo: https://github.com/kx1t/background-radiation-monitor
-* add this to your /boot/config.txt and reboot your Raspberry Pi:
-
-```text
-dtoverlay=vc4-kms-v3d
-dtparam=i2c_arm=on
-dtparam=spi=on
-dtparam=audio=on
-enable_uart=0
-gpu_mem=16
-```
-
-* do a docker compose up -d in the directory with docker-compose.yml
-* Browse to your Raspberry Pi and it should be running!
-Total cost (in addition to a Raspberry Pi) -- about $20
