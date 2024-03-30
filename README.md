@@ -2,6 +2,10 @@
 
 **A simple Docker container to measure and record background radiation in your area. Radiation is detected with a cheaply available board, and connected to a Raspberry Pi to provide Prometheus for datalogging and Grafana for pretty charts.**
 
+You can find live example deployments of this setup here:
+- [Geiger Counter - Belmont, MA, USA](https://kx1t.com/geiger)
+- [Geiger Counter - Heerlen, Netherlands](https://kx1t.com/heerlen-geiger)
+
 ![image](https://github.com/kx1t/background-radiation-monitor/assets/15090643/0a7d5a99-ba72-4a44-9ccf-c4df8a8b9fba)
 
 ## Hardware required
