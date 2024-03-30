@@ -2,7 +2,7 @@
 
 **A simple Docker container to measure and record background radiation in your area. Radiation is detected with a cheaply available board, and connected to a Raspberry Pi to provide Prometheus for datalogging and Grafana for pretty charts.**
 
-![grafana-dashboard](https://raw.githubusercontent.com/balenalabs-incubator/background-radiation-monitor/master/assets/grafana-dashboard.png)
+![image](https://github.com/kx1t/background-radiation-monitor/assets/15090643/0a7d5a99-ba72-4a44-9ccf-c4df8a8b9fba)
 
 ## Hardware required
 
@@ -16,7 +16,8 @@
 
 There are 3 connections we need to make from the radiation detector board to the Raspberry Pi. They are +5V and Ground (GND) for power, and the output pulse line to detect the count. Note that this is called `Vin` which can be a bit confusing as this usually means ‘voltage input’ or something similar, but on this board, it’s the output.
 
-![pi-geiger-simple](https://raw.githubusercontent.com/balenalabs-incubator/background-radiation-monitor/master/assets/pi-geiger-simple.png)
+![image](https://github.com/kx1t/background-radiation-monitor/assets/15090643/560a2b52-e1c5-458d-acb6-0856b577fc83)
+
 
 In this configuration you only need to provide 5 volt power to one of the two boards; if you’re powering the Pi with a standard micro-USB power supply, that will power the detector board via the connections we’ve just made, as well.
 
@@ -45,10 +46,20 @@ wget https://raw.githubusercontent.com/kx1t/background-radiation-monitor/main/do
 docker compose up -d 
 ```
 
+Notes
+- you should tell the software on which GPIO pin you are feeding the Geiger pulses by adding the environment parameter below
+- the pin number corresponds to the number on the circuit board. In our case, we connected `Vin` of the CAJOE Geiger board to pin `33` of the Pi's GPIO connector
+- you should also connect the ground of the CAJOE Geiger board to any of the GPIO ground pins
+- Optionally, you can feed 5 Volts from your Raspberry Pi to the 5 Volts pin on the CAJOE Geiger board
+
+```yaml
+- GEIGER_PIN=33
+```
+
 Now you have a dashboard that can talk to an existing instance of Prometheus. Check that it works with:
 
 ```bash
-docker logs -f counter
+docker logs -f geiger
 ```
 
 You can put following in your `prometheus.yml` config file to ingest data. If you don't run Prometheus in the same docker-compose stack as your `geiger` container, replace `geiger` with the IP of the machine on which your Geiger Counter is running:
