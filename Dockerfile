@@ -31,7 +31,6 @@ RUN set -x && \
         ${TEMP_PACKAGES[@]} \
         && \
     pip install --break-system-packages wheel spidev RPi.GPIO influxdb && \
-
     apt-get remove -y ${TEMP_PACKAGES[@]} && \
     apt-get autoremove -y && \
     rm -rf /src/* /tmp/* /var/lib/apt/lists/*
