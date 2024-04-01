@@ -37,4 +37,4 @@ RUN set -x && \
 
 COPY rootfs/ /
 
-HEALTHCHECK --start-period=60s --interval=600s CMD /home/healthcheck/healthcheck.sh
+HEALTHCHECK --start-period=60s --interval=600s CMD /scripts/healthcheck.sh
