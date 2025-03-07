@@ -23,7 +23,6 @@ RUN set -x && \
     KEPT_PACKAGES+=(bash-builtins) && \
     KEPT_PACKAGES+=(python3-dev) && \
     KEPT_PACKAGES+=(nano) && \
-    KEPT_PACKAGES+=(python3-rpi-lgpio) && \
     #
     # install packages
     apt-get update && \
@@ -31,7 +30,7 @@ RUN set -x && \
         ${KEPT_PACKAGES[@]} \
         ${TEMP_PACKAGES[@]} \
         && \
-    pip install --break-system-packages wheel spidev influxdb && \
+    pip install --break-system-packages wheel spidev influxdb rpi-lgpio && \
     apt-get remove -y ${TEMP_PACKAGES[@]} && \
     apt-get autoremove -y && \
     rm -rf /src/* /tmp/* /var/lib/apt/lists/*
